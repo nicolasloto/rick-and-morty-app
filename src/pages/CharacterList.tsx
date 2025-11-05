@@ -13,8 +13,6 @@ const CharacterList = () => {
     loadMore,
   } = useFetchCharacters()
 
-  // 🌀 Scroll infinito
-  // (Detecta cuando el usuario llega al final de la página y carga más resultados)
   window.onscroll = () => {
     if (
       window.innerHeight + document.documentElement.scrollTop + 200 >=

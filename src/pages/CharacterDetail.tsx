@@ -9,9 +9,14 @@ interface Episode {
   episode: string; // Ej: "S01E01"
 }
 
+// Extendemos el tipo Character para incluir episodios
+interface CharacterWithEpisodes extends Character {
+  episode?: string[]; // opcional, para evitar errores de tipado
+}
+
 const CharacterDetail = () => {
   const { id } = useParams();
-  const [character, setCharacter] = useState<Character | null>(null);
+  const [character, setCharacter] = useState<CharacterWithEpisodes | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,15 +26,16 @@ const CharacterDetail = () => {
       try {
         setLoading(true);
         const res = await api.get(`/character/${id}`);
-        const data: Character = res.data;
+        const data: CharacterWithEpisodes = res.data;
         setCharacter(data);
 
-        // 🧩 Obtener IDs de los episodios desde las URLs
-        const episodeIds = data.episode.map((epUrl: string) =>
-          epUrl.split("/").pop()
-        );
+        // Si no hay episodios, no seguir
+        if (!data.episode || data.episode.length === 0) return;
 
-        // ⚡ Llamada combinada a todos los episodios
+        // Obtener IDs de episodios desde las URLs
+        const episodeIds = data.episode.map((epUrl) => epUrl.split("/").pop()).filter(Boolean);
+
+        // Llamada combinada (la API permite pedir varios episodios por coma)
         const epRes = await api.get(`/episode/${episodeIds.join(",")}`);
         const episodesData = Array.isArray(epRes.data)
           ? epRes.data
@@ -37,6 +43,7 @@ const CharacterDetail = () => {
 
         setEpisodes(episodesData);
       } catch (err) {
+        console.error(err);
         setError("No se pudo cargar el personaje ni sus episodios.");
       } finally {
         setLoading(false);
@@ -84,21 +91,23 @@ const CharacterDetail = () => {
         </div>
 
         {/* 🧾 Lista de episodios */}
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
-          <h3 className="text-lg font-semibold mb-3 text-center">
-            Apariciones en episodios:
-          </h3>
-          <ul className="max-h-60 overflow-y-auto space-y-2">
-            {episodes.map((ep) => (
-              <li
-                key={ep.id}
-                className="text-sm bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2"
-              >
-                <span className="font-medium">{ep.episode}</span> — {ep.name}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {episodes.length > 0 && (
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
+            <h3 className="text-lg font-semibold mb-3 text-center">
+              Apariciones en episodios:
+            </h3>
+            <ul className="max-h-60 overflow-y-auto space-y-2">
+              {episodes.map((ep) => (
+                <li
+                  key={ep.id}
+                  className="text-sm bg-gray-100 dark:bg-gray-700 rounded-lg px-3 py-2"
+                >
+                  <span className="font-medium">{ep.episode}</span> — {ep.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
