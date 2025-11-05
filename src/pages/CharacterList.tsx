@@ -27,9 +27,9 @@ const CharacterList = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-500">
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-          Lista de Personajes
-        </h1>
+      <h1 className="text-3xl font-bold text-center mb-8 text-lime-500">
+        Rick and Morty Characters
+      </h1>
 
         <SearchBar searchTerm={query} setSearchTerm={setQuery} />
 
