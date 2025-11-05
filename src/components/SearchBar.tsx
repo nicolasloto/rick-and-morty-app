@@ -1,17 +1,17 @@
 interface Props {
-  query: string
-  setQuery: (value: string) => void
+  searchTerm: string
+  setSearchTerm: (value: string) => void
 }
 
-const SearchBar = ({ query, setQuery }: Props) => {
+const SearchBar = ({ searchTerm, setSearchTerm }: Props) => {
   return (
-    <div className="w-full flex justify-center mb-6">
+    <div className="flex justify-center">
       <input
         type="text"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
         placeholder="Buscar personaje..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="w-full max-w-md p-3 rounded-xl border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="w-full max-w-md p-3 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 placeholder-gray-400 dark:placeholder-gray-500"
       />
     </div>
   )
